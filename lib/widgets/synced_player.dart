@@ -43,7 +43,11 @@ class _SyncedVideoPlayerState extends State<SyncedVideoPlayer> {
           controller = ChewieController(
             aspectRatio: videoPlayerController.value.aspectRatio,
             videoPlayerController: videoPlayerController,
-            customControls: const MaterialWebControls(),
+            customControls: MaterialWebControls(
+              afterSeek: () {
+                updateStatus();
+              },
+            ),
           );
         });
         videoPlayerController.addListener(() {
