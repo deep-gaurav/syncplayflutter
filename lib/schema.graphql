@@ -16,7 +16,11 @@ type LobbyPlayer {
 }
 
 type MutationRoot {
-  createLobby(userId: String!, userName: String!): String!
+  createLobby(
+    userId: String!
+    userName: String!
+    delayDifferenceSecs: Int!
+  ): String!
   joinLobby(playerId: String!, playerName: String!, roomId: String!): String!
   disconnect(playerId: String!, roomId: String!): String!
   chat(playerId: String!, roomId: String!, message: String!): String!
@@ -71,6 +75,7 @@ type ReadyData {
 
 type Room {
   id: String!
+  delayDifferenceSecs: Int!
   users: [LobbyPlayer!]!
   players: [LobbyPlayer!]!
 }

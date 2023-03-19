@@ -56,6 +56,7 @@ class GameClient extends InheritedWidget {
       variables: CreateLobbyArguments(
         userId: playerId,
         userName: playerName.text,
+        delay_secs: 30,
       ),
     );
     var result = await artemisClient.execute(createLobby);

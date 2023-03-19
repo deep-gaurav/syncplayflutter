@@ -495,6 +495,7 @@ CreateLobbyArguments _$CreateLobbyArgumentsFromJson(
     CreateLobbyArguments(
       userId: json['userId'] as String,
       userName: json['userName'] as String,
+      delay_secs: json['delay_secs'] as int,
     );
 
 Map<String, dynamic> _$CreateLobbyArgumentsToJson(
@@ -502,6 +503,7 @@ Map<String, dynamic> _$CreateLobbyArgumentsToJson(
     <String, dynamic>{
       'userId': instance.userId,
       'userName': instance.userName,
+      'delay_secs': instance.delay_secs,
     };
 
 JoinLobbyArguments _$JoinLobbyArgumentsFromJson(Map<String, dynamic> json) =>

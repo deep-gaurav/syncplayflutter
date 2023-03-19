@@ -649,6 +649,7 @@ class CreateLobbyArguments extends JsonSerializable with EquatableMixin {
   CreateLobbyArguments({
     required this.userId,
     required this.userName,
+    required this.delay_secs,
   });
 
   @override
@@ -659,14 +660,16 @@ class CreateLobbyArguments extends JsonSerializable with EquatableMixin {
 
   late String userName;
 
+  late int delay_secs;
+
   @override
-  List<Object?> get props => [userId, userName];
+  List<Object?> get props => [userId, userName, delay_secs];
   @override
   Map<String, dynamic> toJson() => _$CreateLobbyArgumentsToJson(this);
 }
 
-const CREATE_LOBBY_MUTATION_DOCUMENT_OPERATION_NAME = 'createLobby';
-const CREATE_LOBBY_MUTATION_DOCUMENT = DocumentNode(definitions: [
+final CREATE_LOBBY_MUTATION_DOCUMENT_OPERATION_NAME = 'createLobby';
+final CREATE_LOBBY_MUTATION_DOCUMENT = DocumentNode(definitions: [
   OperationDefinitionNode(
     type: OperationType.mutation,
     name: NameNode(value: 'createLobby'),
@@ -689,6 +692,15 @@ const CREATE_LOBBY_MUTATION_DOCUMENT = DocumentNode(definitions: [
         defaultValue: DefaultValueNode(value: null),
         directives: [],
       ),
+      VariableDefinitionNode(
+        variable: VariableNode(name: NameNode(value: 'delay_secs')),
+        type: NamedTypeNode(
+          name: NameNode(value: 'Int'),
+          isNonNull: true,
+        ),
+        defaultValue: DefaultValueNode(value: null),
+        directives: [],
+      ),
     ],
     directives: [],
     selectionSet: SelectionSetNode(selections: [
@@ -703,6 +715,10 @@ const CREATE_LOBBY_MUTATION_DOCUMENT = DocumentNode(definitions: [
           ArgumentNode(
             name: NameNode(value: 'userName'),
             value: VariableNode(name: NameNode(value: 'userName')),
+          ),
+          ArgumentNode(
+            name: NameNode(value: 'delayDifferenceSecs'),
+            value: VariableNode(name: NameNode(value: 'delay_secs')),
           ),
         ],
         directives: [],
@@ -756,8 +772,8 @@ class JoinLobbyArguments extends JsonSerializable with EquatableMixin {
   Map<String, dynamic> toJson() => _$JoinLobbyArgumentsToJson(this);
 }
 
-const JOIN_LOBBY_MUTATION_DOCUMENT_OPERATION_NAME = 'joinLobby';
-const JOIN_LOBBY_MUTATION_DOCUMENT = DocumentNode(definitions: [
+final JOIN_LOBBY_MUTATION_DOCUMENT_OPERATION_NAME = 'joinLobby';
+final JOIN_LOBBY_MUTATION_DOCUMENT = DocumentNode(definitions: [
   OperationDefinitionNode(
     type: OperationType.mutation,
     name: NameNode(value: 'joinLobby'),
@@ -857,8 +873,8 @@ class DisconnectArguments extends JsonSerializable with EquatableMixin {
   Map<String, dynamic> toJson() => _$DisconnectArgumentsToJson(this);
 }
 
-const DISCONNECT_MUTATION_DOCUMENT_OPERATION_NAME = 'disconnect';
-const DISCONNECT_MUTATION_DOCUMENT = DocumentNode(definitions: [
+final DISCONNECT_MUTATION_DOCUMENT_OPERATION_NAME = 'disconnect';
+final DISCONNECT_MUTATION_DOCUMENT = DocumentNode(definitions: [
   OperationDefinitionNode(
     type: OperationType.mutation,
     name: NameNode(value: 'disconnect'),
@@ -948,8 +964,8 @@ class ChatArguments extends JsonSerializable with EquatableMixin {
   Map<String, dynamic> toJson() => _$ChatArgumentsToJson(this);
 }
 
-const CHAT_MUTATION_DOCUMENT_OPERATION_NAME = 'chat';
-const CHAT_MUTATION_DOCUMENT = DocumentNode(definitions: [
+final CHAT_MUTATION_DOCUMENT_OPERATION_NAME = 'chat';
+final CHAT_MUTATION_DOCUMENT = DocumentNode(definitions: [
   OperationDefinitionNode(
     type: OperationType.mutation,
     name: NameNode(value: 'chat'),
@@ -1027,8 +1043,8 @@ class ChatMutation extends GraphQLQuery<Chat$MutationRoot, ChatArguments> {
       Chat$MutationRoot.fromJson(json);
 }
 
-const PING_QUERY_DOCUMENT_OPERATION_NAME = 'ping';
-const PING_QUERY_DOCUMENT = DocumentNode(definitions: [
+final PING_QUERY_DOCUMENT_OPERATION_NAME = 'ping';
+final PING_QUERY_DOCUMENT = DocumentNode(definitions: [
   OperationDefinitionNode(
     type: OperationType.query,
     name: NameNode(value: 'ping'),
@@ -1083,8 +1099,8 @@ class ServerMessagesArguments extends JsonSerializable with EquatableMixin {
   Map<String, dynamic> toJson() => _$ServerMessagesArgumentsToJson(this);
 }
 
-const SERVER_MESSAGES_SUBSCRIPTION_DOCUMENT_OPERATION_NAME = 'serverMessages';
-const SERVER_MESSAGES_SUBSCRIPTION_DOCUMENT = DocumentNode(definitions: [
+final SERVER_MESSAGES_SUBSCRIPTION_DOCUMENT_OPERATION_NAME = 'serverMessages';
+final SERVER_MESSAGES_SUBSCRIPTION_DOCUMENT = DocumentNode(definitions: [
   OperationDefinitionNode(
     type: OperationType.subscription,
     name: NameNode(value: 'serverMessages'),
@@ -1521,8 +1537,8 @@ class StatusUpdateArguments extends JsonSerializable with EquatableMixin {
   Map<String, dynamic> toJson() => _$StatusUpdateArgumentsToJson(this);
 }
 
-const STATUS_UPDATE_QUERY_DOCUMENT_OPERATION_NAME = 'statusUpdate';
-const STATUS_UPDATE_QUERY_DOCUMENT = DocumentNode(definitions: [
+final STATUS_UPDATE_QUERY_DOCUMENT_OPERATION_NAME = 'statusUpdate';
+final STATUS_UPDATE_QUERY_DOCUMENT = DocumentNode(definitions: [
   OperationDefinitionNode(
     type: OperationType.query,
     name: NameNode(value: 'statusUpdate'),
@@ -1668,8 +1684,8 @@ class ResumedArguments extends JsonSerializable with EquatableMixin {
   Map<String, dynamic> toJson() => _$ResumedArgumentsToJson(this);
 }
 
-const RESUMED_QUERY_DOCUMENT_OPERATION_NAME = 'resumed';
-const RESUMED_QUERY_DOCUMENT = DocumentNode(definitions: [
+final RESUMED_QUERY_DOCUMENT_OPERATION_NAME = 'resumed';
+final RESUMED_QUERY_DOCUMENT = DocumentNode(definitions: [
   OperationDefinitionNode(
     type: OperationType.query,
     name: NameNode(value: 'resumed'),
@@ -1801,8 +1817,8 @@ class PausedArguments extends JsonSerializable with EquatableMixin {
   Map<String, dynamic> toJson() => _$PausedArgumentsToJson(this);
 }
 
-const PAUSED_QUERY_DOCUMENT_OPERATION_NAME = 'paused';
-const PAUSED_QUERY_DOCUMENT = DocumentNode(definitions: [
+final PAUSED_QUERY_DOCUMENT_OPERATION_NAME = 'paused';
+final PAUSED_QUERY_DOCUMENT = DocumentNode(definitions: [
   OperationDefinitionNode(
     type: OperationType.query,
     name: NameNode(value: 'paused'),

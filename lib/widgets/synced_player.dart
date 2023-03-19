@@ -52,7 +52,7 @@ class _SyncedVideoPlayerState extends State<SyncedVideoPlayer> {
           }
         });
 
-        Timer.periodic(const Duration(seconds: 10), (t) {
+        Timer.periodic(const Duration(seconds: 3), (t) {
           if (!mounted) {
             t.cancel();
             return;

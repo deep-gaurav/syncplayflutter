@@ -1,5 +1,5 @@
-mutation createLobby($userId: String!, $userName: String!) {
-  createLobby(userId: $userId, userName: $userName)
+mutation createLobby($userId: String!, $userName: String!, $delay_secs:Int!) {
+  createLobby(userId: $userId, userName: $userName, delayDifferenceSecs:$delay_secs)
 }
 
 mutation joinLobby($userId: String!, $userName: String!, $roomId: String!) {

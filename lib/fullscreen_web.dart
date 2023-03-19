@@ -15,3 +15,7 @@ makeFullScreen() {
     window.screen?.orientation?.lock("any");
   }
 }
+
+bool isAndroid() {
+  return false;
+}
