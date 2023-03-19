@@ -85,7 +85,7 @@ class MyAppState extends State<MyApp> {
       playerId: widget.playerId,
       artemisClient: client,
       child: MaterialApp(
-        title: 'Bingo Tingo',
+        title: 'Sync Player',
         routes: {
           '/': (context) => const Home(),
         },
