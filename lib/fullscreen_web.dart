@@ -8,8 +8,10 @@ makeFullScreen() {
   if (document.fullscreenElement == null) {
     isFullScreen.value = true;
     document.body!.requestFullscreen();
+    window.screen?.orientation?.lock("landscape");
   } else {
     isFullScreen.value = false;
     document.exitFullscreen();
+    window.screen?.orientation?.lock("any");
   }
 }
