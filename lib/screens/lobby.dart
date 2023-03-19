@@ -7,6 +7,8 @@ import 'package:syncplayflutter/graphql_api.graphql.dart';
 import 'package:syncplayflutter/networking/clientProvider.dart';
 import 'package:syncplayflutter/widgets/chat.dart';
 import 'package:syncplayflutter/widgets/synced_player.dart';
+import 'package:syncplayflutter/mock_fullscreen.dart'
+    if (dart.library.html) 'package:syncplayflutter/fullscreen_web.dart';
 
 class Room extends StatefulWidget {
   final RoomFieldsMixin room;
@@ -21,6 +23,11 @@ class _RoomState extends State<Room> {
 
   @override
   void initState() {
+    isFullScreen.addListener(
+      () {
+        setState(() {});
+      },
+    );
     super.initState();
   }
 
@@ -31,63 +38,71 @@ class _RoomState extends State<Room> {
         return false;
       },
       child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: Stack(alignment: AlignmentDirectional.centerStart, children: [
-            Positioned(
-                child: Opacity(
-              opacity: 0.8,
-              child: InkWell(
-                onTap: () => {
-                  Share.share(kIsWeb
-                      ? "Join me for video session at : ${Uri.base}"
-                      : widget.room.id)
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(5)),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+        appBar: isFullScreen.value
+            ? null
+            : AppBar(
+                automaticallyImplyLeading: false,
+                title: Stack(
+                    alignment: AlignmentDirectional.centerStart,
                     children: [
-                      Container(
-                          margin: const EdgeInsets.only(right: 3),
-                          child: Icon(Icons.add,
-                              color:
-                                  Theme.of(context).textTheme.bodyLarge?.color,
-                              size: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.fontSize)),
-                      Text("Invite",
-                          style: Theme.of(context).textTheme.bodyLarge,
-                          overflow: TextOverflow.visible),
-                    ],
-                  ),
-                ),
+                      Positioned(
+                          child: Opacity(
+                        opacity: 0.8,
+                        child: InkWell(
+                          onTap: () => {
+                            Share.share(kIsWeb
+                                ? "Join me for video session at : ${Uri.base}"
+                                : widget.room.id)
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(5)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 8),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                    margin: const EdgeInsets.only(right: 3),
+                                    child: Icon(Icons.add,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge
+                                            ?.color,
+                                        size: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge
+                                            ?.fontSize)),
+                                Text("Invite",
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                    overflow: TextOverflow.visible),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )),
+                      Center(
+                        child: InkWell(
+                          onTap: () => Clipboard.setData(ClipboardData(
+                                  text: widget.room.id.toString()))
+                              .then((value) =>
+                                  showSnack(context, "Copied Room Code!")),
+                          child: Text(
+                            "Room ${widget.room.id}",
+                            style: Theme.of(context).textTheme.titleLarge,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ]),
               ),
-            )),
-            Center(
-              child: InkWell(
-                onTap: () => Clipboard.setData(
-                        ClipboardData(text: widget.room.id.toString()))
-                    .then((value) => showSnack(context, "Copied Room Code!")),
-                child: Text(
-                  "Room ${widget.room.id}",
-                  style: Theme.of(context).textTheme.titleLarge,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          ]),
-        ),
         body: SafeArea(
           child: ChatWidget(
             roomId: widget.room.id,
             child: Container(
-              margin: const EdgeInsets.all(20),
+              // margin: const EdgeInsets.all(20),
               child: selectedVideo != null
                   ? SyncedVideoPlayer(
                       videoPath: selectedVideo!,

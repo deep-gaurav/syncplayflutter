@@ -5,6 +5,7 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:syncplayflutter/graphql_api.graphql.dart';
 import 'package:syncplayflutter/networking/clientProvider.dart';
+import 'package:syncplayflutter/widgets/chewei_controls.dart';
 import 'package:video_player/video_player.dart';
 
 class SyncedVideoPlayer extends StatefulWidget {
@@ -42,6 +43,7 @@ class _SyncedVideoPlayerState extends State<SyncedVideoPlayer> {
           controller = ChewieController(
             aspectRatio: videoPlayerController.value.aspectRatio,
             videoPlayerController: videoPlayerController,
+            customControls: const MaterialWebControls(),
           );
         });
         videoPlayerController.addListener(() {
