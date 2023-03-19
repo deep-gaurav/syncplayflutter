@@ -1,0 +1,143 @@
+mutation createLobby($userId: String!, $userName: String!) {
+  createLobby(userId: $userId, userName: $userName)
+}
+
+mutation joinLobby($userId: String!, $userName: String!, $roomId: String!) {
+  joinLobby(playerId: $userId, playerName: $userName, roomId: $roomId)
+}
+
+mutation disconnect($userId: String!, $roomId: String!) {
+  disconnect(playerId: $userId, roomId: $roomId)
+}
+
+mutation chat($userId: String!, $roomId: String!, $message: String!) {
+  chat(playerId: $userId, roomId: $roomId, message: $message)
+}
+
+query ping {
+  ping
+}
+
+fragment ReadyDataFields on ReadyData {
+  playing
+  positionSecs
+}
+
+fragment PlayerFields on Player {
+  name
+  id
+}
+
+fragment LobbyPlayerFields on LobbyPlayer {
+  player {
+    ...PlayerFields
+  }
+  isConnected
+  state {
+    __typename
+    ... on ReadyData {
+      ...ReadyDataFields
+    }
+    ... on NotReadyData {
+      empty
+    }
+  }
+}
+
+fragment RoomFields on Room {
+  id
+  users {
+    ...LobbyPlayerFields
+  }
+}
+
+subscription serverMessages($roomId: String!, $userId: String!) {
+  serverMessages(roomId: $roomId, playerId: $userId) {
+    __typename
+    ... on PlayerLeft {
+      player {
+        ...PlayerFields
+      }
+      room {
+        ...RoomFields
+      }
+    }
+    ... on PlayerJoined {
+      player {
+        ...PlayerFields
+      }
+      room {
+        ...RoomFields
+      }
+    }
+    ... on PlayerConnected {
+      player {
+        ...PlayerFields
+      }
+      room {
+        ...RoomFields
+      }
+    }
+    ... on PlayerRemoved {
+      player {
+        ...PlayerFields
+      }
+      room {
+        ...RoomFields
+      }
+    }
+    ... on ReadyData {
+      ...ReadyDataFields
+    }
+    ... on ChatMessage {
+      player {
+        ...PlayerFields
+      }
+      message
+    }
+  }
+}
+
+query statusUpdate(
+  $userId: String!
+  $roomId: String!
+  $isPlaying: Boolean!
+  $positionSecs: Int!
+) {
+  statusUpdate(
+    userId: $userId
+    roomId: $roomId
+    isPlaying: $isPlaying
+    positionSecs: $positionSecs
+  ) {
+    ...ReadyDataFields
+  }
+}
+
+query resumed(
+  $userId: String!
+  $roomId: String!
+  $positionSecs: Int!
+) {
+  resumed(
+    userId: $userId
+    roomId: $roomId
+    positionSecs: $positionSecs
+  ) {
+    ...ReadyDataFields
+  }
+}
+
+query paused(
+  $userId: String!
+  $roomId: String!
+  $positionSecs: Int!
+) {
+  paused(
+    userId: $userId
+    roomId: $roomId
+    positionSecs: $positionSecs
+  ) {
+    ...ReadyDataFields
+  }
+}
