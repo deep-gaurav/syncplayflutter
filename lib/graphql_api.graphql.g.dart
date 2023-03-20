@@ -313,7 +313,8 @@ ServerMessages$Subscription$ServerResponse$ChatMessage
           ..player =
               ServerMessages$Subscription$ServerResponse$ChatMessage$Player
                   .fromJson(json['player'] as Map<String, dynamic>)
-          ..message = json['message'] as String;
+          ..message = json['message'] as String
+          ..color = json['color'] as String?;
 
 Map<String, dynamic>
     _$ServerMessages$Subscription$ServerResponse$ChatMessageToJson(
@@ -322,6 +323,7 @@ Map<String, dynamic>
           '__typename': instance.$$typename,
           'player': instance.player.toJson(),
           'message': instance.message,
+          'color': instance.color,
         };
 
 ServerMessages$Subscription$ServerResponse

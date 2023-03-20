@@ -371,8 +371,10 @@ class ServerMessages$Subscription$ServerResponse$ChatMessage
 
   late String message;
 
+  String? color;
+
   @override
-  List<Object?> get props => [player, message];
+  List<Object?> get props => [player, message, color];
   @override
   Map<String, dynamic> toJson() =>
       _$ServerMessages$Subscription$ServerResponse$ChatMessageToJson(this);
@@ -1320,6 +1322,13 @@ final SERVER_MESSAGES_SUBSCRIPTION_DOCUMENT = DocumentNode(definitions: [
               ),
               FieldNode(
                 name: NameNode(value: 'message'),
+                alias: null,
+                arguments: [],
+                directives: [],
+                selectionSet: null,
+              ),
+              FieldNode(
+                name: NameNode(value: 'color'),
                 alias: null,
                 arguments: [],
                 directives: [],

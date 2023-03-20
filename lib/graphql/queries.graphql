@@ -94,6 +94,7 @@ subscription serverMessages($roomId: String!, $userId: String!) {
         ...PlayerFields
       }
       message
+      color
     }
   }
 }
