@@ -88,7 +88,10 @@ class _HomeState extends State<Home> {
 
                             if (roomId != null) {
                               var subscription = await gc?.connect(roomId);
-                              var firstMessage = await subscription?.first;
+                              var firstMessage = await subscription?.firstWhere(
+                                (element) => element.data?.serverMessages
+                                    is ServerMessages$Subscription$ServerResponse$PlayerConnected,
+                              );
                               var room = (firstMessage?.data?.serverMessages
                                       as ServerMessages$Subscription$ServerResponse$PlayerConnected)
                                   .room;
