@@ -61,7 +61,7 @@ class _ChatWidgetState extends State<ChatWidget> {
   Widget build(BuildContext context) {
     return CallbackShortcuts(
       bindings: {
-        const SingleActivator(LogicalKeyboardKey.space, control: true): () {
+        const SingleActivator(LogicalKeyboardKey.keyO, meta: true): () {
           Navigator.of(context).push(
             PageRouteBuilder(
               opaque: false,
