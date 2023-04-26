@@ -59,110 +59,89 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return CallbackShortcuts(
-      bindings: {
-        const SingleActivator(LogicalKeyboardKey.keyO, meta: true): () {
-          Navigator.of(context).push(
-            PageRouteBuilder(
-              opaque: false,
-              barrierColor: Colors.black.withOpacity(0.7),
-              barrierDismissible: true,
-              pageBuilder: (context, _, __) => ChatWindow(
-                roomId: widget.roomId,
-                chatMessages: chatMessages,
+    return Stack(
+      children: [
+        widget.child,
+        StatefulBuilder(builder: (context, setState2) {
+          return AnimatedPositioned(
+            duration: const Duration(
+              milliseconds: 200,
+            ),
+            curve: Curves.ease,
+            top: pos.dy,
+            left: pos.dx,
+            child: GestureDetector(
+              onPanUpdate: (details) {
+                setState2(() {
+                  pos += details.delta;
+                });
+              },
+              onPanCancel: () {
+                setState2(() {
+                  if (pos.dx > MediaQuery.of(context).size.width / 2) {
+                    pos =
+                        Offset(MediaQuery.of(context).size.width - 60, pos.dy);
+                  } else {
+                    pos = Offset(10, pos.dy);
+                  }
+                });
+              },
+              onPanEnd: (details) {
+                setState2(() {
+                  if (pos.dx > MediaQuery.of(context).size.width / 2) {
+                    pos =
+                        Offset(MediaQuery.of(context).size.width - 60, pos.dy);
+                  } else {
+                    pos = Offset(10, pos.dy);
+                  }
+                });
+              },
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      opaque: false,
+                      barrierColor: Colors.black.withOpacity(0.7),
+                      barrierDismissible: true,
+                      pageBuilder: (context, _, __) => ChatWindow(
+                        roomId: widget.roomId,
+                        chatMessages: chatMessages,
+                      ),
+                    ),
+                  );
+                },
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.center,
+                  children: [
+                    const ChatBubbleWidget(),
+                    if (msg != null)
+                      Positioned(
+                        left: pos.dx > MediaQuery.of(context).size.width / 2
+                            ? null
+                            : 40,
+                        right: pos.dx > MediaQuery.of(context).size.width / 2
+                            ? 50
+                            : null,
+                        child: AnimatedOpacity(
+                          opacity: hiddenRecent ? 0 : 1,
+                          duration: const Duration(seconds: 1),
+                          child: Container(
+                            child: BubbleSpecialTwo(
+                              text: msg!.message,
+                              isSender: false,
+                              tail: false,
+                            ),
+                          ),
+                        ),
+                      )
+                  ],
+                ),
               ),
             ),
           );
-        }
-      },
-      child: Focus(
-        autofocus: true,
-        child: Stack(
-          children: [
-            widget.child,
-            StatefulBuilder(builder: (context, setState2) {
-              return AnimatedPositioned(
-                duration: const Duration(
-                  milliseconds: 200,
-                ),
-                curve: Curves.ease,
-                top: pos.dy,
-                left: pos.dx,
-                child: GestureDetector(
-                  onPanUpdate: (details) {
-                    setState2(() {
-                      pos += details.delta;
-                    });
-                  },
-                  onPanCancel: () {
-                    setState2(() {
-                      if (pos.dx > MediaQuery.of(context).size.width / 2) {
-                        pos = Offset(
-                            MediaQuery.of(context).size.width - 60, pos.dy);
-                      } else {
-                        pos = Offset(10, pos.dy);
-                      }
-                    });
-                  },
-                  onPanEnd: (details) {
-                    setState2(() {
-                      if (pos.dx > MediaQuery.of(context).size.width / 2) {
-                        pos = Offset(
-                            MediaQuery.of(context).size.width - 60, pos.dy);
-                      } else {
-                        pos = Offset(10, pos.dy);
-                      }
-                    });
-                  },
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        PageRouteBuilder(
-                          opaque: false,
-                          barrierColor: Colors.black.withOpacity(0.7),
-                          barrierDismissible: true,
-                          pageBuilder: (context, _, __) => ChatWindow(
-                            roomId: widget.roomId,
-                            chatMessages: chatMessages,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      alignment: Alignment.center,
-                      children: [
-                        const ChatBubbleWidget(),
-                        if (msg != null)
-                          Positioned(
-                            left: pos.dx > MediaQuery.of(context).size.width / 2
-                                ? null
-                                : 40,
-                            right:
-                                pos.dx > MediaQuery.of(context).size.width / 2
-                                    ? 50
-                                    : null,
-                            child: AnimatedOpacity(
-                              opacity: hiddenRecent ? 0 : 1,
-                              duration: const Duration(seconds: 1),
-                              child: Container(
-                                child: BubbleSpecialTwo(
-                                  text: msg!.message,
-                                  isSender: false,
-                                  tail: false,
-                                ),
-                              ),
-                            ),
-                          )
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }),
-          ],
-        ),
-      ),
+        }),
+      ],
     );
   }
 }
