@@ -38,7 +38,6 @@ class _RoomState extends State<Room> {
         return false;
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
         backgroundColor: Colors.black,
         appBar: isFullScreen.value
             ? null
