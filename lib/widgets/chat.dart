@@ -317,6 +317,7 @@ class _ChatWindowState extends State<ChatWindow> {
                                     autofocus: true,
                                     autocorrect: true,
                                     maxLines: null,
+                                    textInputAction: TextInputAction.go,
                                     onSubmitted: (value) {
                                       sendChat();
                                     },
