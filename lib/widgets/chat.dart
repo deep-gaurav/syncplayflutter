@@ -231,124 +231,119 @@ class _ChatWindowState extends State<ChatWindow> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.6),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const ChatBubbleWidget(),
-                Expanded(
-                  child: Dialog(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(height: 10),
-                        Expanded(
-                          child: Container(
-                            child: ListView(
-                              reverse: true,
-                              children: [
-                                ...List.generate(chatMessages.length, (i) => i)
-                                    .map(
-                                      (i) {
-                                        var e = chatMessages[i];
-                                        var showName = true;
-                                        if (i > 1) {
-                                          if (chatMessages[i - 1].player.id ==
-                                              chatMessages[i].player.id) {
-                                            showName = false;
-                                          }
-                                        }
-                                        return Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.stretch,
-                                          children: [
-                                            if (e.player.id !=
-                                                    GameClient.of(context)!
-                                                        .playerId &&
-                                                showName)
-                                              Container(
-                                                margin: const EdgeInsets.only(
-                                                    left: 20, right: 20),
-                                                child: Text(
-                                                  e.player.name,
-                                                  textAlign: TextAlign.left,
-                                                ),
-                                              ),
-                                            BubbleNormal(
-                                              color: e.color != null
-                                                  ? HexColor.fromHex(e.color!)
-                                                  : Colors.white70,
-                                              text: e.message,
-                                              isSender: e.player.id ==
-                                                  GameClient.of(context)!
-                                                      .playerId,
+    return ConstrainedBox(
+      constraints:
+          BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const ChatBubbleWidget(),
+            Expanded(
+              child: Dialog(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: Container(
+                        child: ListView(
+                          reverse: true,
+                          children: [
+                            ...List.generate(chatMessages.length, (i) => i)
+                                .map(
+                                  (i) {
+                                    var e = chatMessages[i];
+                                    var showName = true;
+                                    if (i > 1) {
+                                      if (chatMessages[i - 1].player.id ==
+                                          chatMessages[i].player.id) {
+                                        showName = false;
+                                      }
+                                    }
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        if (e.player.id !=
+                                                GameClient.of(context)!
+                                                    .playerId &&
+                                            showName)
+                                          Container(
+                                            margin: const EdgeInsets.only(
+                                                left: 20, right: 20),
+                                            child: Text(
+                                              e.player.name,
+                                              textAlign: TextAlign.left,
                                             ),
-                                          ],
-                                        );
-                                      },
-                                    )
-                                    .toList()
-                                    .reversed
-                              ],
-                            ),
-                          ),
+                                          ),
+                                        BubbleNormal(
+                                          color: e.color != null
+                                              ? HexColor.fromHex(e.color!)
+                                              : Colors.white70,
+                                          text: e.message,
+                                          isSender: e.player.id ==
+                                              GameClient.of(context)!.playerId,
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                )
+                                .toList()
+                                .reversed
+                          ],
                         ),
-                        const SizedBox(height: 10),
-                        IntrinsicHeight(
-                          child: Row(
-                            children: [
-                              const SizedBox(
-                                width: 20,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Expanded(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxHeight: 100,
                               ),
-                              Expanded(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    maxHeight: 100,
-                                  ),
-                                  child: TextField(
-                                    controller: controller,
-                                    autofocus: true,
-                                    autocorrect: true,
-                                    maxLines: null,
-                                    textInputAction: TextInputAction.go,
-                                    onSubmitted: (value) {
-                                      sendChat();
-                                    },
-                                    decoration: const InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: 'Message',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () {
+                              child: TextField(
+                                controller: controller,
+                                autofocus: true,
+                                autocorrect: true,
+                                maxLines: null,
+                                textInputAction: TextInputAction.go,
+                                onSubmitted: (value) {
                                   sendChat();
                                 },
-                                iconSize: 20,
-                                padding: const EdgeInsets.all(2),
-                                icon: const Icon(Icons.send),
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: 'Message',
+                                ),
                               ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ],
+                          IconButton(
+                            onPressed: () {
+                              sendChat();
+                            },
+                            iconSize: 20,
+                            padding: const EdgeInsets.all(2),
+                            icon: const Icon(Icons.send),
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
