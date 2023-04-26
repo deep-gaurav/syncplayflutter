@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:syncplayflutter/graphql_api.graphql.dart';
 import 'package:syncplayflutter/networking/clientProvider.dart';
 
@@ -58,89 +59,110 @@ class _ChatWidgetState extends State<ChatWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        widget.child,
-        StatefulBuilder(builder: (context, setState2) {
-          return AnimatedPositioned(
-            duration: const Duration(
-              milliseconds: 200,
-            ),
-            curve: Curves.ease,
-            top: pos.dy,
-            left: pos.dx,
-            child: GestureDetector(
-              onPanUpdate: (details) {
-                setState2(() {
-                  pos += details.delta;
-                });
-              },
-              onPanCancel: () {
-                setState2(() {
-                  if (pos.dx > MediaQuery.of(context).size.width / 2) {
-                    pos =
-                        Offset(MediaQuery.of(context).size.width - 60, pos.dy);
-                  } else {
-                    pos = Offset(10, pos.dy);
-                  }
-                });
-              },
-              onPanEnd: (details) {
-                setState2(() {
-                  if (pos.dx > MediaQuery.of(context).size.width / 2) {
-                    pos =
-                        Offset(MediaQuery.of(context).size.width - 60, pos.dy);
-                  } else {
-                    pos = Offset(10, pos.dy);
-                  }
-                });
-              },
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    PageRouteBuilder(
-                      opaque: false,
-                      barrierColor: Colors.black.withOpacity(0.7),
-                      barrierDismissible: true,
-                      pageBuilder: (context, _, __) => ChatWindow(
-                        roomId: widget.roomId,
-                        chatMessages: chatMessages,
-                      ),
-                    ),
-                  );
-                },
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  alignment: Alignment.center,
-                  children: [
-                    const ChatBubbleWidget(),
-                    if (msg != null)
-                      Positioned(
-                        left: pos.dx > MediaQuery.of(context).size.width / 2
-                            ? null
-                            : 40,
-                        right: pos.dx > MediaQuery.of(context).size.width / 2
-                            ? 50
-                            : null,
-                        child: AnimatedOpacity(
-                          opacity: hiddenRecent ? 0 : 1,
-                          duration: const Duration(seconds: 1),
-                          child: Container(
-                            child: BubbleSpecialTwo(
-                              text: msg!.message,
-                              isSender: false,
-                              tail: false,
-                            ),
-                          ),
-                        ),
-                      )
-                  ],
-                ),
+    return CallbackShortcuts(
+      bindings: {
+        const SingleActivator(LogicalKeyboardKey.space, control: true): () {
+          Navigator.of(context).push(
+            PageRouteBuilder(
+              opaque: false,
+              barrierColor: Colors.black.withOpacity(0.7),
+              barrierDismissible: true,
+              pageBuilder: (context, _, __) => ChatWindow(
+                roomId: widget.roomId,
+                chatMessages: chatMessages,
               ),
             ),
           );
-        }),
-      ],
+        }
+      },
+      child: Focus(
+        autofocus: true,
+        child: Stack(
+          children: [
+            widget.child,
+            StatefulBuilder(builder: (context, setState2) {
+              return AnimatedPositioned(
+                duration: const Duration(
+                  milliseconds: 200,
+                ),
+                curve: Curves.ease,
+                top: pos.dy,
+                left: pos.dx,
+                child: GestureDetector(
+                  onPanUpdate: (details) {
+                    setState2(() {
+                      pos += details.delta;
+                    });
+                  },
+                  onPanCancel: () {
+                    setState2(() {
+                      if (pos.dx > MediaQuery.of(context).size.width / 2) {
+                        pos = Offset(
+                            MediaQuery.of(context).size.width - 60, pos.dy);
+                      } else {
+                        pos = Offset(10, pos.dy);
+                      }
+                    });
+                  },
+                  onPanEnd: (details) {
+                    setState2(() {
+                      if (pos.dx > MediaQuery.of(context).size.width / 2) {
+                        pos = Offset(
+                            MediaQuery.of(context).size.width - 60, pos.dy);
+                      } else {
+                        pos = Offset(10, pos.dy);
+                      }
+                    });
+                  },
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        PageRouteBuilder(
+                          opaque: false,
+                          barrierColor: Colors.black.withOpacity(0.7),
+                          barrierDismissible: true,
+                          pageBuilder: (context, _, __) => ChatWindow(
+                            roomId: widget.roomId,
+                            chatMessages: chatMessages,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.center,
+                      children: [
+                        const ChatBubbleWidget(),
+                        if (msg != null)
+                          Positioned(
+                            left: pos.dx > MediaQuery.of(context).size.width / 2
+                                ? null
+                                : 40,
+                            right:
+                                pos.dx > MediaQuery.of(context).size.width / 2
+                                    ? 50
+                                    : null,
+                            child: AnimatedOpacity(
+                              opacity: hiddenRecent ? 0 : 1,
+                              duration: const Duration(seconds: 1),
+                              child: Container(
+                                child: BubbleSpecialTwo(
+                                  text: msg!.message,
+                                  isSender: false,
+                                  tail: false,
+                                ),
+                              ),
+                            ),
+                          )
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -188,6 +210,7 @@ class _ChatWindowState extends State<ChatWindow> {
 
   TextEditingController controller = TextEditingController();
   sendChat() async {
+    var nav = Navigator.of(context);
     if (controller.text.trim().isNotEmpty) {
       var result = await GameClient.of(context)!.artemisClient.execute(
             ChatMutation(
@@ -200,6 +223,8 @@ class _ChatWindowState extends State<ChatWindow> {
           );
       if (!result.hasErrors) {
         controller.clear();
+        FocusManager.instance.primaryFocus?.unfocus();
+        nav.pop();
       }
     }
   }
@@ -292,7 +317,9 @@ class _ChatWindowState extends State<ChatWindow> {
                                     autofocus: true,
                                     autocorrect: true,
                                     maxLines: null,
-                                    keyboardType: TextInputType.multiline,
+                                    onSubmitted: (value) {
+                                      sendChat();
+                                    },
                                     decoration: const InputDecoration(
                                       border: InputBorder.none,
                                       hintText: 'Message',
