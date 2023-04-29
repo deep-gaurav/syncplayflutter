@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:artemis/schema/graphql_response.dart';
 import 'package:chewie/chewie.dart';
@@ -31,7 +32,10 @@ class _SyncedVideoPlayerState extends State<SyncedVideoPlayer> {
   bool? lastSentPlaying;
   int? lastSentPosition;
 
-  String? subtitleUrl;
+  SubtitleController subtitleUrl = SubtitleController(
+    subtitlesContent: """""",
+    subtitleType: SubtitleType.srt,
+  );
 
   StreamSubscription<GraphQLResponse<ServerMessages$Subscription>>?
       subscription;
@@ -52,11 +56,17 @@ class _SyncedVideoPlayerState extends State<SyncedVideoPlayer> {
                 OptionItem(
                   onTap: () async {
                     var file = await FilePicker.platform.pickFiles(
-                      withData: false,
+                      withData: true,
                       type: FileType.any,
                     );
                     setState(() {
-                      subtitleUrl = file?.files.first.path;
+                      var data = utf8.decode(file!.files.first.bytes!,
+                          allowMalformed: true);
+                      subtitleUrl = SubtitleController(
+                        subtitlesContent: data,
+                        subtitleType: SubtitleType.srt,
+                        // subtitlesContent: utf8.decode(file!.files.first.bytes!),
+                      );
                     });
                   },
                   iconData: Icons.subtitles,
@@ -122,12 +132,17 @@ class _SyncedVideoPlayerState extends State<SyncedVideoPlayer> {
   Widget build(BuildContext context) {
     return controller != null
         ? SubtitleWrapper(
+            key: Key(subtitleUrl.hashCode.toString()),
+            subtitleStyle: const SubtitleStyle(
+                hasBorder: true,
+                textColor: Colors.white,
+                borderStyle: SubtitleBorderStyle(
+                  color: Colors.black,
+                )),
             videoPlayerController: controller!.videoPlayerController,
-            subtitleController: SubtitleController(
-              subtitleUrl: subtitleUrl,
-              subtitleType: SubtitleType.srt,
-            ),
+            subtitleController: subtitleUrl,
             videoChild: Chewie(
+              key: const Key("chewei"),
               controller: controller!,
             ),
           )
