@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:artemis/schema/graphql_response.dart';
 import 'package:chewie/chewie.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:subtitle_wrapper_package/subtitle_wrapper_package.dart';
 import 'package:syncplayflutter/graphql_api.graphql.dart';
 import 'package:syncplayflutter/networking/clientProvider.dart';
 import 'package:syncplayflutter/widgets/chewei_controls.dart';
@@ -29,6 +31,8 @@ class _SyncedVideoPlayerState extends State<SyncedVideoPlayer> {
   bool? lastSentPlaying;
   int? lastSentPosition;
 
+  String? subtitleUrl;
+
   StreamSubscription<GraphQLResponse<ServerMessages$Subscription>>?
       subscription;
 
@@ -43,6 +47,23 @@ class _SyncedVideoPlayerState extends State<SyncedVideoPlayer> {
           controller = ChewieController(
             aspectRatio: videoPlayerController.value.aspectRatio,
             videoPlayerController: videoPlayerController,
+            additionalOptions: (context) {
+              return [
+                OptionItem(
+                  onTap: () async {
+                    var file = await FilePicker.platform.pickFiles(
+                      withData: false,
+                      type: FileType.any,
+                    );
+                    setState(() {
+                      subtitleUrl = file?.files.first.path;
+                    });
+                  },
+                  iconData: Icons.subtitles,
+                  title: "Subtitle",
+                )
+              ];
+            },
             customControls: MaterialWebControls(
               afterSeek: () {
                 updateStatus();
@@ -100,8 +121,15 @@ class _SyncedVideoPlayerState extends State<SyncedVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     return controller != null
-        ? Chewie(
-            controller: controller!,
+        ? SubtitleWrapper(
+            videoPlayerController: controller!.videoPlayerController,
+            subtitleController: SubtitleController(
+              subtitleUrl: subtitleUrl,
+              subtitleType: SubtitleType.srt,
+            ),
+            videoChild: Chewie(
+              controller: controller!,
+            ),
           )
         : const CircularProgressIndicator();
   }
